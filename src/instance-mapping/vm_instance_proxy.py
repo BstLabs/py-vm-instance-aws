@@ -1,0 +1,19 @@
+from enum import Enum
+from typing import Protocol, Tuple
+
+
+class VmState(Enum):
+    ...
+
+
+class VmInstanceProxy(Protocol):
+    async def start(self, trace: bool) -> None: ...
+    async def stop(self, trace: bool) -> None: ...
+    async def reboot(self, trace: bool) -> None: ...
+
+    @property
+    def state(self) -> VmState: ...
+
+
+class RemoteShellProxy(VmInstanceProxy):
+    async def execute(self, *commands: str) -> Tuple[str, str]: ...
