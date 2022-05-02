@@ -5,7 +5,7 @@ from typing import Any, Iterable, Tuple, Union
 from boto3 import Session, resource
 from pyclvm._common.session import get_session #TODO source out of clvm
 
-from vm_instance_proxy import VmState
+from vm_instance.vm_instance_proxy import VmState
 
 
 class _Ec2StateProxy(VmState):
