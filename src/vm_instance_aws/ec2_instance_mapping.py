@@ -2,7 +2,7 @@ from typing import Iterator
 
 from boto3 import Session  
 
-from ec2_instance_proxy import Ec2InstanceProxy, Ec2RemoteShellProxy
+from .ec2_instance_proxy import Ec2InstanceProxy, Ec2RemoteShellProxy
 from vm_instance.vm_instance_mapping import VmInstanceMappingBase
 from vm_instance.vm_instance_proxy import VmInstanceProxy
 
