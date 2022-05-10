@@ -1,10 +1,10 @@
 from typing import Iterator
 
-from boto3 import Session  
-
-from .ec2_instance_proxy import Ec2InstanceProxy, Ec2RemoteShellProxy
+from boto3 import Session
 from vm_instance.vm_instance_mapping import VmInstanceMappingBase
 from vm_instance.vm_instance_proxy import VmInstanceProxy
+
+from .ec2_instance_proxy import Ec2InstanceProxy, Ec2RemoteShellProxy
 
 
 class Ec2InstanceMapping(VmInstanceMappingBase[VmInstanceProxy]):
@@ -21,17 +21,17 @@ class Ec2InstanceMapping(VmInstanceMappingBase[VmInstanceProxy]):
     def __len__(self) -> int:
         return sum(1 for _ in self)
 
-    def _get_instance(self, id: str) -> Ec2InstanceProxy:
-        return Ec2InstanceProxy(id)
+    def _get_instance(self, instance_id: str) -> Ec2InstanceProxy:
+        return Ec2InstanceProxy(instance_id)
 
     def _get_instance_id(self, instance_name: str) -> str:
         instance_details = self._client.describe_instances(
             Filters=[
                 {
-                    'Name': 'tag:Name',  # as long as you are following the convention of putting Name in tags
-                    'Values': [
+                    "Name": "tag:Name",  # as long as you are following the convention of putting Name in tags
+                    "Values": [
                         instance_name,
-                    ]
+                    ],
                 },
             ],
         )
@@ -39,5 +39,5 @@ class Ec2InstanceMapping(VmInstanceMappingBase[VmInstanceProxy]):
 
 
 class Ec2RemoteShellMapping(Ec2InstanceMapping, VmInstanceMappingBase):
-    def _get_instance(self, id: str) -> Ec2RemoteShellProxy:
-        return Ec2RemoteShellProxy(id)
+    def _get_instance(self, instance_id: str) -> Ec2RemoteShellProxy:
+        return Ec2RemoteShellProxy(instance_id)
