@@ -2,7 +2,7 @@ import time
 from typing import Any, Iterable, Tuple, Union
 
 from boto3 import Session, resource
-from vm_instance.vm_instance_proxy import VmState
+from instances_map_abc.vm_instance_proxy import VmState
 
 from ._common.session import get_session  # TODO source out of clvm
 

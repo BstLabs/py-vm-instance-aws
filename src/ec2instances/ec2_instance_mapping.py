@@ -1,8 +1,8 @@
 from typing import Iterator
 
 from boto3 import Session
-from vm_instance.vm_instance_mapping import VmInstanceMappingBase
-from vm_instance.vm_instance_proxy import VmInstanceProxy
+from instances_map_abc.vm_instance_mapping import VmInstanceMappingBase
+from instances_map_abc.vm_instance_proxy import VmInstanceProxy
 
 from .ec2_instance_proxy import Ec2InstanceProxy, Ec2RemoteShellProxy
 

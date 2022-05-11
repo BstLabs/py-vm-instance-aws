@@ -21,4 +21,4 @@ from ec2instances.ec2_instance_proxy import Ec2InstanceProxy, Ec2RemoteShellProx
 
 ## License
 
-MIT License, Copyright (c) 2021-2022 BST LABS. See [LICENSE](https://github.com/BstLabs/py-vm-instance-aws/LICENCE.md) file.
+MIT License, Copyright (c) 2021-2022 BST LABS. See [LICENSE](https://github.com/BstLabs/py-vm-instance-aws/LICENSE.md) file.

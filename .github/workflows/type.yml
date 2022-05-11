@@ -18,5 +18,5 @@ jobs:
       - run: pip install flit==3.6.0
       - run: flit install
       - run: pip install pytype==2022.1.31
-      - run: pytype --config=pytype.cfg src/vm_instance_aws/*.py
-      - run: pytype --config=pytype.cfg src/vm_instance_aws/_common/*.py
+      - run: pytype --config=pytype.cfg src/ec2instances/*.py
+      - run: pytype --config=pytype.cfg src/ec2instances/_common/*.py

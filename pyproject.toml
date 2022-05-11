@@ -13,13 +13,14 @@ requires-python = ">=3.8"
 dependencies = [
     "boto3>=1.22.10",
     "botocore>=1.25.10",
+    "instances-map-abc>=1.0.1",
     "jmespath>=1.0.0",
     "pyjdict>=1.0.6",
     "python-dateutil>=2.8.2",
     "s3transfer>=0.5.2",
     "six>=1.16.0",
-    "urllib3>=1.26.9",
     "testresources>=2.0.1"
+    "urllib3>=1.26.9"
 ]
 
 
@@ -38,14 +39,6 @@ dev = [
     "flake8 >=4.0.1",
     "pre-commit >=2.17.0"
     ]
-test = [
-    "pytest >=5.4.3",
-]
-gui = [
-# Qt5 components could be installed separately, e.g. via brew
-    "PyQt5 >= 5.15.6",
-    "PyQtWebEngine >= 5.15.5",
-]
 
 [tool.isort]
 profile = "black"
