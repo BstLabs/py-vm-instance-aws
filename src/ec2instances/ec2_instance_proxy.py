@@ -1,11 +1,10 @@
-
 import time
 from typing import Any, Iterable, Tuple, Union
 
 from boto3 import Session, resource
-from ._common.session import get_session #TODO source out of clvm
+from instances_map_abc.vm_instance_proxy import VmState
 
-from vm_instance.vm_instance_proxy import VmState
+from ._common.session import get_session  # TODO source out of clvm
 
 
 class _Ec2StateProxy(VmState):
@@ -20,8 +19,8 @@ class _Ec2StateProxy(VmState):
 class Ec2InstanceProxy:
     def __init__(self, instance_id: str) -> None:
         self._instance_id = instance_id
-        self._ec2_client = Session().client('ec2')
-        self._instance = resource('ec2').Instance(instance_id)
+        self._ec2_client = Session().client("ec2")
+        self._instance = resource("ec2").Instance(instance_id)
 
     def start(self, wait: bool = True) -> None:
         """
@@ -30,9 +29,7 @@ class Ec2InstanceProxy:
         :return: None
         """
         self._ec2_client.start_instances(
-            InstanceIds=[
-                self._instance_id
-            ],
+            InstanceIds=[self._instance_id],
         )
         wait and self._instance.wait_until_running()  # python short circuiting
 
@@ -43,9 +40,7 @@ class Ec2InstanceProxy:
         :return: None
         """
         self._ec2_client.stop_instances(
-            InstanceIds=[
-                self._instance_id
-            ],
+            InstanceIds=[self._instance_id],
         )
         wait and self._instance.wait_until_stopped()
 
@@ -57,12 +52,10 @@ class Ec2InstanceProxy:
 class Ec2RemoteShellProxy(Ec2InstanceProxy):
     def __init__(self, instance_id: str) -> None:
         super().__init__(instance_id)
-        self._ssm_client = get_session({}).client('ssm')
+        self._ssm_client = get_session({}).client("ssm")
 
     def execute(
-            self,
-            *commands: Union[str, Iterable],
-            **kwargs: str
+        self, *commands: Union[str, Iterable], **kwargs: str
     ) -> Union[Tuple[Any, ...], Tuple[str, str]]:
         result = self._ssm_client.send_command(
             InstanceIds=[self._instance_id],
