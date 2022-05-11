@@ -1,0 +1,56 @@
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "ec2map"
+authors = [{name = "BST Labs", email = "bstlabs@caios.io"}]
+readme = "README.md"
+license = {file = "LICENSE.md"}
+classifiers = ["License :: OSI Approved :: MIT License"]
+dynamic = ["version", "description"]
+requires-python = ">=3.8"
+dependencies = [
+    "boto3>=1.22.10",
+    "botocore>=1.25.10",
+    "instances-map-abc>=1.0.1",
+    "jmespath>=1.0.0",
+    "pyjdict>=1.0.6",
+    "python-dateutil>=2.8.2",
+    "s3transfer>=0.5.2",
+    "six>=1.16.0",
+    "testresources>=2.0.1",
+    "urllib3>=1.26.9"
+]
+
+
+[project.urls]
+Source = "https://github.com/bstlabs/py-vm-instance-aws"
+Home = "https://github.com/bstlabs/py-vm-instance-aws"
+
+
+[project.optional-dependencies]
+doc = ["mkdocs-material >=8.1.2"]
+dev = [
+    "black >=22.3.0",
+    "pylint >=2.12.2",
+    "isort >=5.9.3",
+    "autoflake >=1.4",
+    "flake8 >=4.0.1",
+    "pre-commit >=2.17.0"
+    ]
+
+[tool.isort]
+profile = "black"
+py_version = 39
+skip = [".gitignore", ".dockerignore"]
+extend_skip = [".md", ".json"]
+skip_glob = ["docs/*"]
+
+[tool.black]
+line-length = 88
+target-version = ['py39']
+include = '\.pyi?$'
+
+[tool.flit.module]
+name = "ec2instances"
