@@ -48,6 +48,16 @@ class Ec2InstanceProxy:
     def state(self) -> _Ec2StateProxy:
         return _Ec2StateProxy[self._instance.state["Name"]]
 
+    @property
+    def id(self) -> str:
+        return self._instance_id
+
+    @property
+    def name(self):
+        for tag in self._instance.tags:
+            if tag["Key"] == "Name":
+                return tag["Value"]
+
 
 class Ec2RemoteShellProxy(Ec2InstanceProxy):
     def __init__(self, instance_id: str) -> None:
@@ -87,3 +97,7 @@ class Ec2RemoteShellProxy(Ec2InstanceProxy):
             print(result.StandardOutputContent)
             print(result.StandardErrorContent)
         return result.StandardOutputContent, result.StandardErrorContent
+
+    @property
+    def session(self):
+        return self._ssm_client

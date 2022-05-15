@@ -1,4 +1,4 @@
-from typing import Iterator
+from typing import Generator, Iterator
 
 from boto3 import Session
 from instances_map_abc.vm_instance_mapping import VmInstanceMappingBase
@@ -16,10 +16,24 @@ class Ec2InstanceMapping(VmInstanceMappingBase[VmInstanceProxy]):
         return self._get_instance(instance_id)
 
     def __iter__(self) -> Iterator:
-        yield from self._client.describe_instances()["Reservations"]
+        instances = (
+            r["Instances"][0] for r in self._client.describe_instances()["Reservations"]
+        )
+        for instance in instances:
+            yield self._get_instance(instance["InstanceId"])
 
     def __len__(self) -> int:
         return sum(1 for _ in self)
+
+    def keys(self) -> Generator[str, None, None]:
+        for instance in self:
+            yield instance.name
+
+    def values(self) -> Generator[str, None, None]:
+        yield from self
+
+    def items(self) -> Generator[str, None, None]:
+        yield from zip(self.keys(), self.values())
 
     def _get_instance(self, instance_id: str) -> Ec2InstanceProxy:
         return Ec2InstanceProxy(instance_id)
