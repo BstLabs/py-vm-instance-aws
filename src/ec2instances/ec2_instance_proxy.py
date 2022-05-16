@@ -1,7 +1,7 @@
 import time
 from typing import Any, Iterable, Tuple, Union
 
-from boto3 import Session, resource
+from boto3 import resource
 from instances_map_abc.vm_instance_proxy import VmState
 
 from ._common.session import get_session  # TODO source out of clvm
@@ -17,9 +17,9 @@ class _Ec2StateProxy(VmState):
 
 
 class Ec2InstanceProxy:
-    def __init__(self, instance_id: str) -> None:
+    def __init__(self, instance_id: str, **kwargs: str) -> None:
         self._instance_id = instance_id
-        self._ec2_client = Session().client("ec2")
+        self._ec2_client = get_session(kwargs).client("ec2")
         self._instance = resource("ec2").Instance(instance_id)
 
     def start(self, wait: bool = True) -> None:
@@ -60,9 +60,9 @@ class Ec2InstanceProxy:
 
 
 class Ec2RemoteShellProxy(Ec2InstanceProxy):
-    def __init__(self, instance_id: str) -> None:
+    def __init__(self, instance_id: str, **kwargs: str) -> None:
         super().__init__(instance_id)
-        self._ssm_client = get_session({}).client("ssm")
+        self._ssm_client = get_session(kwargs).client("ssm")
 
     def execute(
         self, *commands: Union[str, Iterable], **kwargs: str
