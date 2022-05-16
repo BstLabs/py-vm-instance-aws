@@ -1,15 +1,15 @@
 from typing import Generator, Iterator
 
-from boto3 import Session
 from instances_map_abc.vm_instance_mapping import VmInstanceMappingBase
 from instances_map_abc.vm_instance_proxy import VmInstanceProxy
 
+from ._common.session import get_session
 from .ec2_instance_proxy import Ec2InstanceProxy, Ec2RemoteShellProxy
 
 
 class Ec2InstanceMapping(VmInstanceMappingBase[VmInstanceProxy]):
-    def __init__(self) -> None:
-        self._client = Session().client("ec2")
+    def __init__(self, **kwargs: str) -> None:
+        self._client = get_session(kwargs).client("ec2")
 
     def __getitem__(self, name: str) -> VmInstanceProxy:
         instance_id = self._get_instance_id(name)
