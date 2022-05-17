@@ -4,7 +4,7 @@ from typing import Any, Iterable, Tuple, Union
 from boto3 import resource
 from instances_map_abc.vm_instance_proxy import VmState
 
-from ._common.session import get_session  # TODO source out of clvm
+from .common.session import get_session  # TODO source out of clvm
 
 
 class _Ec2StateProxy(VmState):
@@ -62,7 +62,8 @@ class Ec2InstanceProxy:
 class Ec2RemoteShellProxy(Ec2InstanceProxy):
     def __init__(self, instance_id: str, **kwargs: str) -> None:
         super().__init__(instance_id)
-        self._ssm_client = get_session(kwargs).client("ssm")
+        self._session = get_session(kwargs)
+        self._ssm_client = self._session.client("ssm")
 
     def execute(
         self, *commands: Union[str, Iterable], **kwargs: str
@@ -100,4 +101,4 @@ class Ec2RemoteShellProxy(Ec2InstanceProxy):
 
     @property
     def session(self):
-        return self._ssm_client
+        return self._session
