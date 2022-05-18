@@ -1,10 +1,10 @@
 import time
 from typing import Any, Iterable, Tuple, Union
 
-from boto3 import Session, resource
+from boto3 import resource
 from instances_map_abc.vm_instance_proxy import VmState
 
-from ._common.session import get_session  # TODO source out of clvm
+from .common.session import get_session  # TODO source out of clvm
 
 
 class _Ec2StateProxy(VmState):
@@ -17,9 +17,9 @@ class _Ec2StateProxy(VmState):
 
 
 class Ec2InstanceProxy:
-    def __init__(self, instance_id: str) -> None:
+    def __init__(self, instance_id: str, **kwargs: str) -> None:
         self._instance_id = instance_id
-        self._ec2_client = Session().client("ec2")
+        self._ec2_client = get_session(kwargs).client("ec2")
         self._instance = resource("ec2").Instance(instance_id)
 
     def start(self, wait: bool = True) -> None:
@@ -48,11 +48,22 @@ class Ec2InstanceProxy:
     def state(self) -> _Ec2StateProxy:
         return _Ec2StateProxy[self._instance.state["Name"]]
 
+    @property
+    def id(self) -> str:
+        return self._instance_id
+
+    @property
+    def name(self):
+        for tag in self._instance.tags:
+            if tag["Key"] == "Name":
+                return tag["Value"]
+
 
 class Ec2RemoteShellProxy(Ec2InstanceProxy):
-    def __init__(self, instance_id: str) -> None:
+    def __init__(self, instance_id: str, **kwargs: str) -> None:
         super().__init__(instance_id)
-        self._ssm_client = get_session({}).client("ssm")
+        self._session = get_session(kwargs)
+        self._ssm_client = self._session.client("ssm")
 
     def execute(
         self, *commands: Union[str, Iterable], **kwargs: str
@@ -87,3 +98,7 @@ class Ec2RemoteShellProxy(Ec2InstanceProxy):
             print(result.StandardOutputContent)
             print(result.StandardErrorContent)
         return result.StandardOutputContent, result.StandardErrorContent
+
+    @property
+    def session(self):
+        return self._session
