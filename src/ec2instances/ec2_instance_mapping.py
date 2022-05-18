@@ -4,6 +4,7 @@ from instances_map_abc.vm_instance_mapping import VmInstanceMappingBase
 from instances_map_abc.vm_instance_proxy import VmInstanceProxy
 
 from .common.session import get_session
+
 from .ec2_instance_proxy import Ec2InstanceProxy, Ec2RemoteShellProxy
 
 
