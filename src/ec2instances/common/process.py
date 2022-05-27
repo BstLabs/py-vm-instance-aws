@@ -2,6 +2,7 @@ from concurrent.futures import ThreadPoolExecutor
 from typing import Callable, Dict, Optional, Tuple
 
 from boto3.session import Session
+
 from ec2instances.ec2_instance_mapping import Ec2RemoteShellMapping
 
 
