@@ -11,7 +11,7 @@ classifiers = ["License :: OSI Approved :: MIT License"]
 dynamic = ["version", "description"]
 requires-python = ">=3.8"
 dependencies = [
-    "boto3>=1.22.10",
+    "boto3>=1.23.9",
     "botocore>=1.25.10",
     "instances-map-abc>=1.0.1",
     "jmespath>=1.0.0",

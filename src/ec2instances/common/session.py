@@ -1,9 +1,8 @@
 import getpass
 import platform
 from datetime import datetime
-from typing import Dict, Final, Optional
+from typing import Dict, Optional
 
-import boto3
 from boto3.session import Session
 from jdict import jdict, patch_module
 
@@ -13,7 +12,7 @@ patch_module("botocore.parsers")
 patch_module("botocore.configloader")
 
 
-_STS_CLIENT: Final = boto3.client("sts")
+# _STS_CLIENT: Final = boto3.client("sts")
 
 
 class Credentials(jdict):
