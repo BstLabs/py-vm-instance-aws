@@ -36,7 +36,7 @@ class Ec2InstanceMapping(VmInstanceMappingBase[VmInstanceProxy]):
         yield from zip(self.keys(), self.values())
 
     def _get_instance(self, instance_id: str) -> Ec2InstanceProxy:
-        return Ec2InstanceProxy(instance_id)
+        return Ec2InstanceProxy(instance_id, ec2_client=self._client)
 
     def _get_instance_id(self, instance_name: str) -> str:
         instance_details = self._client.describe_instances(

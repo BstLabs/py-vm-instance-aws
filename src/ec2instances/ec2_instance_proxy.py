@@ -1,6 +1,7 @@
 import time
-from typing import Any, Iterable, Tuple, Union
+from typing import Any, Iterable, Optional, Tuple, Union
 
+import botocore
 from boto3 import resource
 from instances_map_abc.vm_instance_proxy import VmState
 
@@ -17,9 +18,14 @@ class _Ec2StateProxy(VmState):
 
 
 class Ec2InstanceProxy:
-    def __init__(self, instance_id: str, **kwargs: str) -> None:
+    def __init__(
+        self,
+        instance_id: str,
+        ec2_client: Optional[botocore.client.BaseClient] = None,
+        **kwargs: str,
+    ) -> None:
         self._instance_id = instance_id
-        self._ec2_client = get_session(kwargs).client("ec2")
+        self._ec2_client = ec2_client or get_session(kwargs).client("ec2")
         self._instance = resource("ec2").Instance(instance_id)
 
     def start(self, wait: bool = True) -> None:
