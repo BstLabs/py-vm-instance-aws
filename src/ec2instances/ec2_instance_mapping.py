@@ -8,24 +8,24 @@ from .common.session import get_session
 from .ec2_instance_proxy import Ec2InstanceProxy, Ec2RemoteShellProxy
 
 
-class Ec2AllInstancesMapping(VmInstanceMappingBase[VmInstanceProxy]):
+class Ec2AllInstancesData():
     def __init__(self, **kwargs: str) -> None:
         self._all_instances = resource("ec2").instances.all()
         self._instances_data = [
             (
-                instance_.id,
-                self._get_instance_name(instance_),
-                instance_.state.Code,
-                instance_.state.Name,
+                _instance.id,
+                self._get_instance_name(_instance),
+                _instance.state.Code,
+                _instance.state.Name,
             )
-            for instance_ in self._all_instances
+            for _instance in self._all_instances
         ]
 
     def __iter__(self) -> Iterator:
         yield from self._instances_data
 
-    def _get_instance_name(self, instance_: Dict[str, Any]) -> str:
-        for tag in instance_.tags:
+    def _get_instance_name(self, _instance: Dict[str, Any]) -> str:
+        for tag in _instance.tags:
             if tag["Key"] == "Name":
                 return tag["Value"]
 
