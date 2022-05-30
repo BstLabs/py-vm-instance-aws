@@ -1,4 +1,4 @@
-from typing import Any, Generator, Iterator, Dict
+from typing import Any, Dict, Generator, Iterator
 
 from boto3 import resource
 from instances_map_abc.vm_instance_mapping import VmInstanceMappingBase
