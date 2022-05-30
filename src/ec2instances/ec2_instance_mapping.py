@@ -61,7 +61,6 @@ class Ec2InstanceMapping(VmInstanceMappingBase[VmInstanceProxy]):
     def _get_instance(self, instance_id: str) -> Ec2InstanceProxy:
         return Ec2InstanceProxy(instance_id, self._session, ec2_client=self._client)
 
-
     def _get_instance_id(self, instance_name: str) -> str:
         instance_details = self._client.describe_instances(
             Filters=[
