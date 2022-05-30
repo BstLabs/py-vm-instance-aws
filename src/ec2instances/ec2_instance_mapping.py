@@ -1,4 +1,4 @@
-from typing import Generator, Iterator
+from typing import Any, Generator, Iterator
 
 from boto3 import resource
 from instances_map_abc.vm_instance_mapping import VmInstanceMappingBase
@@ -7,17 +7,25 @@ from instances_map_abc.vm_instance_proxy import VmInstanceProxy
 from .common.session import get_session
 from .ec2_instance_proxy import Ec2InstanceProxy, Ec2RemoteShellProxy
 
+
 class Ec2AllInstancesMapping(VmInstanceMappingBase[VmInstanceProxy]):
     def __init__(self, **kwargs: str) -> None:
         self._client = get_session(kwargs).client("ec2")
         self._all_instances = resource("ec2").instances.all()
-        self._instances_data = [(instance_.id, self._get_instance_name(instance_), instance_.state.Code, instance_.state.Name) 
-                                for instance_ in self._all_instances]
-    
+        self._instances_data = [
+            (
+                instance_.id,
+                self._get_instance_name(instance_),
+                instance_.state.Code,
+                instance_.state.Name,
+            )
+            for instance_ in self._all_instances
+        ]
+
     def __iter__(self) -> Iterator:
         yield from self._instances_data
-        
-    def _get_instance_name(self, instance_):
+
+    def _get_instance_name(self, instance_: dict[str, Any]) -> str:
         for tag in instance_.tags:
             if tag["Key"] == "Name":
                 return tag["Value"]
