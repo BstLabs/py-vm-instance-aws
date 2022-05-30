@@ -5,7 +5,6 @@ import botocore
 from boto3 import resource
 from instances_map_abc.vm_instance_proxy import VmState
 
-
 class _Ec2StateProxy(VmState):
     pending = 0
     running = 16
