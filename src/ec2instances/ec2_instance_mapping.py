@@ -1,9 +1,32 @@
-from typing import Generator, Iterator, Tuple
+from typing import Any, Dict, Generator, Iterator, Tuple
 
+from boto3 import resource
 from instances_map_abc.vm_instance_mapping import VmInstanceMappingBase
 from instances_map_abc.vm_instance_proxy import VmInstanceProxy
 
 from .ec2_instance_proxy import Ec2InstanceProxy, Ec2RemoteShellProxy
+
+
+class Ec2AllInstancesData:
+    def __init__(self, **kwargs: str) -> None:
+        self._all_instances = resource("ec2").instances.all()
+        self._instances_data = [
+            (
+                _instance.id,
+                self._get_instance_name(_instance),
+                _instance.state.Code,
+                _instance.state.Name,
+            )
+            for _instance in self._all_instances
+        ]
+
+    def __iter__(self) -> Iterator:
+        yield from self._instances_data
+
+    def _get_instance_name(self, _instance: Dict[str, Any]) -> str:
+        for tag in _instance.tags:
+            if tag["Key"] == "Name":
+                return tag["Value"]
 
 
 class Ec2InstanceMapping(VmInstanceMappingBase[VmInstanceProxy]):
@@ -36,7 +59,7 @@ class Ec2InstanceMapping(VmInstanceMappingBase[VmInstanceProxy]):
         yield from zip(self.keys(), self.values())
 
     def _get_instance(self, instance_id: str) -> Ec2InstanceProxy:
-        return Ec2InstanceProxy(instance_id, self._session)
+        return Ec2InstanceProxy(instance_id, self._session, ec2_client=self._client)
 
     def _get_instance_id(self, instance_name: str) -> str:
         instance_details = self._client.describe_instances(
