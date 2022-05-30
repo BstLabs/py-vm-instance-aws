@@ -5,8 +5,6 @@ import botocore
 from boto3 import resource
 from instances_map_abc.vm_instance_proxy import VmState
 
-from .common.session import get_session  # TODO source out of clvm
-
 
 class _Ec2StateProxy(VmState):
     pending = 0
@@ -21,11 +19,12 @@ class Ec2InstanceProxy:
     def __init__(
         self,
         instance_id: str,
+        session,
         ec2_client: Optional[botocore.client.BaseClient] = None,
         **kwargs: str,
     ) -> None:
         self._instance_id = instance_id
-        self._ec2_client = ec2_client or get_session(kwargs).client("ec2")
+        self._ec2_client = ec2_client or session.client("ec2")
         self._instance = resource("ec2").Instance(instance_id)
 
     def start(self, wait: bool = True) -> None:
@@ -66,9 +65,9 @@ class Ec2InstanceProxy:
 
 
 class Ec2RemoteShellProxy(Ec2InstanceProxy):
-    def __init__(self, instance_id: str, **kwargs: str) -> None:
-        super().__init__(instance_id)
-        self._session = get_session(kwargs)
+    def __init__(self, instance_id: str, session) -> None:
+        super().__init__(instance_id, session)
+        self._session = session
         self._ssm_client = self._session.client("ssm")
 
     def execute(
