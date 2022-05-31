@@ -8,7 +8,7 @@ from .ec2_instance_proxy import Ec2InstanceProxy, Ec2RemoteShellProxy
 
 
 class Ec2AllInstancesData:
-    def __init__(self, **kwargs: str) -> None:
+    def __init__(self) -> None:
         self._all_instances = resource("ec2").instances.all()
         self._instances_data = [
             (
