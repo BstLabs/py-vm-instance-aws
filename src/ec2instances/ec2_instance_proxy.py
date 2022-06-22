@@ -2,7 +2,7 @@ import time
 from typing import Any, Iterable, Optional, Tuple, Union
 
 import botocore
-from boto3 import resource
+from boto3 import resource, setup_default_session
 from instances_map_abc.vm_instance_proxy import VmState
 
 
@@ -25,6 +25,8 @@ class Ec2InstanceProxy:
     ) -> None:
         self._instance_id = instance_id
         self._ec2_client = ec2_client or session.client("ec2")
+        # ---
+        setup_default_session(profile_name=session.profile_name)
         self._instance = resource("ec2").Instance(instance_id)
 
     def start(self, wait: bool = True) -> None:
