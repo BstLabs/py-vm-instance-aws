@@ -72,6 +72,10 @@ class Ec2InstanceMapping(VmInstanceMappingBase[VmInstanceProxy]):
                 },
             ],
         )
+        if not instance_details["Reservations"]:
+            raise RuntimeError(
+            "[ERROR] No such instance registered: wrong instance name provided"
+        )
         return instance_details["Reservations"][0]["Instances"][0]["InstanceId"]
 
 
