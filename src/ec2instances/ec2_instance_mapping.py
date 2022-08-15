@@ -62,6 +62,7 @@ class Ec2InstanceMapping(VmInstanceMappingBase[VmInstanceProxy]):
         return Ec2InstanceProxy(instance_id, self._session, ec2_client=self._client)
 
     def _get_instance_id(self, instance_name: str) -> str:
+        """Retrieves instance id, ignores terminated instances. """
         instance_details = self._client.describe_instances(
             Filters=[
                 {
@@ -70,6 +71,16 @@ class Ec2InstanceMapping(VmInstanceMappingBase[VmInstanceProxy]):
                         instance_name,
                     ],
                 },
+                {
+                    "Name": "instance-state-name",
+                    "Values": [
+                        "pending",
+                        "running",
+                        "shutting-down",
+                        "stopping",
+                        "stopped"
+                    ]
+                }
             ],
         )
         if not instance_details["Reservations"]:
