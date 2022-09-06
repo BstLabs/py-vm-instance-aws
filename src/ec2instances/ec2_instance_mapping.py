@@ -1,6 +1,9 @@
-from typing import Any, Dict, Generator, Iterator, Tuple
+import sys
+from types import FunctionType
+from typing import Any, Callable, Dict, Generator, Iterator, Optional, Tuple
 
 from boto3 import resource
+from botocore.exceptions import ClientError
 from instances_map_abc.vm_instance_mapping import VmInstanceMappingBase
 from instances_map_abc.vm_instance_proxy import VmInstanceProxy
 
@@ -8,17 +11,24 @@ from .ec2_instance_proxy import Ec2InstanceProxy, Ec2RemoteShellProxy
 
 
 class Ec2AllInstancesData:
-    def __init__(self) -> None:
-        self._all_instances = resource("ec2").instances.all()
-        self._instances_data = [
-            (
-                _instance.id,
-                self._get_instance_name(_instance),
-                _instance.state.Code,
-                _instance.state.Name,
-            )
-            for _instance in self._all_instances
-        ]
+    def __init__(self, auth_callback: Optional[Callable] = None, **kwargs: str) -> None:
+        try:
+            self._all_instances = resource("ec2").instances.all()
+            self._instances_data = [
+                (
+                    _instance.id,
+                    self._get_instance_name(_instance),
+                    _instance.state.Code,
+                    _instance.state.Name,
+                )
+                for _instance in self._all_instances
+            ]
+        except ClientError:
+            if isinstance(auth_callback, FunctionType):
+                auth_callback(**kwargs)
+            else:
+                "\n---\nUnexpected authentication behavior. Please examine your credentials.\n"
+                sys.exit(-1)
 
     def __iter__(self) -> Iterator:
         yield from self._instances_data
