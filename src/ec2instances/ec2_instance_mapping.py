@@ -40,9 +40,10 @@ class Ec2AllInstancesData:
 
 
 class Ec2InstanceMapping(VmInstanceMappingBase[VmInstanceProxy]):
-    def __init__(self, session) -> None:
+    def __init__(self, session, auth_callback: Optional[Callable] = None) -> None:
         self._session = session
         self._client = self._session.client("ec2")
+        self._reauth = auth_callback
 
     def __getitem__(self, name: str) -> VmInstanceProxy:
         instance_id = self._get_instance_id(name)
@@ -102,4 +103,4 @@ class Ec2InstanceMapping(VmInstanceMappingBase[VmInstanceProxy]):
 
 class Ec2RemoteShellMapping(Ec2InstanceMapping, VmInstanceMappingBase):
     def _get_instance(self, instance_id: str) -> Ec2RemoteShellProxy:
-        return Ec2RemoteShellProxy(instance_id, self._session)
+        return Ec2RemoteShellProxy(instance_id, self._session, auth_callback=self._reauth)

@@ -1,7 +1,10 @@
 import time
-from typing import Any, Iterable, Optional, Tuple, Union
+from typing import Any, Iterable, Optional, Tuple, Union, Callable
+from types import FunctionType
+import sys
 
 import botocore
+from botocore.exceptions import ClientError
 from boto3 import resource
 from instances_map_abc.vm_instance_proxy import VmState
 
@@ -21,11 +24,20 @@ class Ec2InstanceProxy:
         instance_id: str,
         session,
         ec2_client: Optional[botocore.client.BaseClient] = None,
+        auth_callback: Optional[Callable] = None,
         **kwargs: str,
     ) -> None:
-        self._instance_id = instance_id
-        self._ec2_client = ec2_client or session.client("ec2")
-        self._instance = resource("ec2").Instance(instance_id)
+        try:
+            self._instance_id = instance_id
+            self._ec2_client = ec2_client or session.client("ec2")
+            self._instance = resource("ec2").Instance(instance_id)
+            self._instance.state  # TODO this line raises the exception (in case of credentials problem)
+        except ClientError:
+            if isinstance(auth_callback, FunctionType):
+                auth_callback(**kwargs)
+            else:
+                "\n---\nUnexpected authentication behavior. Please examine your credentials.\n"
+                sys.exit(-1)
 
     def start(self, wait: bool = True) -> None:
         """
@@ -65,8 +77,8 @@ class Ec2InstanceProxy:
 
 
 class Ec2RemoteShellProxy(Ec2InstanceProxy):
-    def __init__(self, instance_id: str, session) -> None:
-        super().__init__(instance_id, session)
+    def __init__(self, instance_id: str, session, auth_callback: Optional[Callable] = None) -> None:
+        super().__init__(instance_id, session, auth_callback=auth_callback)
         self._session = session
         self._ssm_client = self._session.client("ssm")
 
