@@ -103,4 +103,6 @@ class Ec2InstanceMapping(VmInstanceMappingBase[VmInstanceProxy]):
 
 class Ec2RemoteShellMapping(Ec2InstanceMapping, VmInstanceMappingBase):
     def _get_instance(self, instance_id: str) -> Ec2RemoteShellProxy:
-        return Ec2RemoteShellProxy(instance_id, self._session, auth_callback=self._reauth)
+        return Ec2RemoteShellProxy(
+            instance_id, self._session, auth_callback=self._reauth
+        )

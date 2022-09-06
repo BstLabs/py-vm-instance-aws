@@ -1,11 +1,11 @@
-import time
-from typing import Any, Iterable, Optional, Tuple, Union, Callable
-from types import FunctionType
 import sys
+import time
+from types import FunctionType
+from typing import Any, Callable, Iterable, Optional, Tuple, Union
 
 import botocore
-from botocore.exceptions import ClientError
 from boto3 import resource
+from botocore.exceptions import ClientError
 from instances_map_abc.vm_instance_proxy import VmState
 
 
@@ -77,7 +77,9 @@ class Ec2InstanceProxy:
 
 
 class Ec2RemoteShellProxy(Ec2InstanceProxy):
-    def __init__(self, instance_id: str, session, auth_callback: Optional[Callable] = None) -> None:
+    def __init__(
+        self, instance_id: str, session, auth_callback: Optional[Callable] = None
+    ) -> None:
         super().__init__(instance_id, session, auth_callback=auth_callback)
         self._session = session
         self._ssm_client = self._session.client("ssm")
