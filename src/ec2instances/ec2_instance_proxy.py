@@ -36,8 +36,7 @@ class Ec2InstanceProxy:
             if isinstance(auth_callback, FunctionType):
                 auth_callback(**kwargs)
             else:
-                "\n---\nUnexpected authentication behavior. Please examine your credentials.\n"
-                sys.exit(-1)
+                raise
 
     def start(self, wait: bool = True) -> None:
         """
