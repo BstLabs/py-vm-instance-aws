@@ -1,4 +1,3 @@
-import sys
 import time
 from types import FunctionType
 from typing import Any, Callable, Iterable, Optional, Tuple, Union

@@ -1,4 +1,3 @@
-import sys
 from types import FunctionType
 from typing import Any, Callable, Dict, Generator, Iterator, Optional, Tuple
 
