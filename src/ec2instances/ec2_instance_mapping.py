@@ -1,4 +1,3 @@
-import sys
 from types import FunctionType
 from typing import Any, Callable, Dict, Generator, Iterator, Optional, Tuple
 
@@ -27,8 +26,7 @@ class Ec2AllInstancesData:
             if isinstance(auth_callback, FunctionType):
                 auth_callback(**kwargs)
             else:
-                "\n---\nUnexpected authentication behavior. Please examine your credentials.\n"
-                sys.exit(-1)
+                raise
 
     def __iter__(self) -> Iterator:
         yield from self._instances_data
