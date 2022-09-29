@@ -1,5 +1,20 @@
 # CHANGELOG
 
+## [v1.0.9](https://github.com/BstLabs/py-vm-instance-aws/releases/tag/v1.0.9) - 2022-09-29 14:19:46
+
+## What's Changed
+* Added support for `wait_until_running` on instance start/stop
+* Provided authentication callback globally
+* Raise exceptions instead of printing info on bad credentials
+
+
+**Full Changelog**: https://github.com/BstLabs/py-vm-instance-aws/compare/v.1.0.8...v1.0.9
+
+### Documentation
+
+- changelog:
+  - update release notes ([7341904](https://github.com/BstLabs/py-vm-instance-aws/commit/73419046b1d2abb644d2bd96cd3ca4df5c3f4283))
+
 ## [v1.0.9b2](https://github.com/BstLabs/py-vm-instance-aws/releases/tag/v1.0.9b2) - 2022-09-20 16:14:03
 
 *No description*
