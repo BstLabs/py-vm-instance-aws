@@ -59,6 +59,15 @@ class Ec2InstanceProxy:
         )
         wait and self._instance.wait_until_stopped()
 
+    def wait_until_running(self) -> None:
+        """
+        Waiter for running state
+
+        :return: None
+        """
+        if self.state == _Ec2StateProxy.pending:
+            self._instance.wait_until_running()
+
     @property
     def state(self) -> _Ec2StateProxy:
         return _Ec2StateProxy[self._instance.state["Name"]]
