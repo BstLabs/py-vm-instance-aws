@@ -27,6 +27,7 @@ dependencies = [
 [project.urls]
 Source = "https://github.com/bstlabs/py-vm-instance-aws"
 Home = "https://github.com/bstlabs/py-vm-instance-aws"
+Changelog = "https://github.com/BstLabs/py-vm-instance-aws/blob/main/CHANGELOG.md"
 
 
 [project.optional-dependencies]
