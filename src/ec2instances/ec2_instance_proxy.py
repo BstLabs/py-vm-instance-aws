@@ -97,7 +97,10 @@ class Ec2RemoteShellProxy(Ec2InstanceProxy):
         result = self._ssm_client.send_command(
             InstanceIds=[self._instance_id],
             DocumentName="AWS-RunShellScript",
-            Parameters={"commands": ["source /etc/bashrc", *commands]},
+            Parameters={
+                "commands": ["source /etc/bashrc", *commands],
+                **kwargs.get("Parameters", {}),
+            },
         )
 
         command_id = result["Command"]["CommandId"]
@@ -111,7 +114,7 @@ class Ec2RemoteShellProxy(Ec2InstanceProxy):
                 CommandId=command_id,
                 InstanceId=self._instance_id,
                 WaiterConfig={
-                    "Delay": kwargs.get("delay", 5),
+                    "Delay": kwargs.get("delay", 1),
                     "MaxAttempts": kwargs.get("attempts", 20),
                 },
             )
