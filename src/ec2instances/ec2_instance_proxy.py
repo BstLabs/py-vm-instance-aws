@@ -1,6 +1,5 @@
-import time
 from types import FunctionType
-from typing import Any, Callable, Iterable, Optional, Tuple, Union
+from typing import Any, Callable, Optional, Tuple, Union
 
 import botocore
 from boto3 import resource
@@ -92,41 +91,48 @@ class Ec2RemoteShellProxy(Ec2InstanceProxy):
         self._ssm_client = self._session.client("ssm")
 
     def execute(
-        self, *commands: Union[str, Iterable], **kwargs: str
-    ) -> Union[Tuple[Any, ...], Tuple[str, str]]:
+        self,
+        command: str,
+        delay=1,
+        attempts=60,
+        wait=True,
+        **parameters: str,
+    ) -> Union[Tuple[Any, ...], str]:
+
+        try:
+            assert self.state.name == "running"
+        except AssertionError as assert_err:
+            raise RuntimeError(
+                f"instance {self._instance_id} is not in a valid state"
+            ) from assert_err
+
         result = self._ssm_client.send_command(
             InstanceIds=[self._instance_id],
             DocumentName="AWS-RunShellScript",
-            Parameters={
-                "commands": ["source /etc/bashrc", *commands],
-                **kwargs.get("Parameters", {}),
-            },
+            Parameters={"commands": ["source /etc/bashrc", command], **parameters},
         )
 
         command_id = result["Command"]["CommandId"]
-        # see https://stackoverflow.com/questions/50067035/retrieving-command-invocation-in-aws-ssm
-        time.sleep(2)
-        if not kwargs.get("wait", True):
-            return self._ssm_client, command_id, self._instance_id
+        if not wait:
+            return command_id
+
         waiter = self._ssm_client.get_waiter("command_executed")
-        try:
-            waiter.wait(
-                CommandId=command_id,
-                InstanceId=self._instance_id,
-                WaiterConfig={
-                    "Delay": kwargs.get("delay", 1),
-                    "MaxAttempts": kwargs.get("attempts", 20),
-                },
-            )
-        finally:
-            result = self._ssm_client.get_command_invocation(
-                CommandId=command_id,
-                InstanceId=self._instance_id,
-                PluginName="aws:RunShellScript",
-            )
-            print(result.StandardOutputContent)
-            print(result.StandardErrorContent)
-        return result.StandardOutputContent, result.StandardErrorContent
+        waiter.wait(
+            CommandId=command_id,
+            InstanceId=self._instance_id,
+            WaiterConfig={"Delay": delay, "MaxAttempts": attempts},
+        )
+
+        response = self._ssm_client.get_command_invocation(
+            CommandId=command_id,
+            InstanceId=self._instance_id,
+            PluginName="aws:RunShellScript",
+        )
+
+        return (
+            response["StandardOutputContent"].rstrip("\n"),
+            response["StandardErrorContent"].rstrip("\n"),
+        )
 
     @property
     def session(self):
