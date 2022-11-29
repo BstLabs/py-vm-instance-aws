@@ -92,10 +92,10 @@ class Ec2RemoteShellProxy(Ec2InstanceProxy):
 
     def execute(
         self,
-        command: str,
         delay=1,
         attempts=60,
         wait=True,
+        *command: str,
         **parameters: str,
     ) -> Union[Tuple[Any, ...], str]:
 
@@ -109,7 +109,7 @@ class Ec2RemoteShellProxy(Ec2InstanceProxy):
         result = self._ssm_client.send_command(
             InstanceIds=[self._instance_id],
             DocumentName="AWS-RunShellScript",
-            Parameters={"commands": ["source /etc/bashrc", command], **parameters},
+            Parameters={"commands": ["source /etc/bashrc", *command], **parameters},
         )
 
         command_id = result["Command"]["CommandId"]
