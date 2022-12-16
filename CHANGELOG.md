@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## [v1.0.10](https://github.com/BstLabs/py-vm-instance-aws/releases/tag/v1.0.10) - 2022-12-16 11:54:47
+
+*No description*
+
+### Documentation
+
+- changelog:
+  - update release notes ([8947872](https://github.com/BstLabs/py-vm-instance-aws/commit/8947872bad89608bf403c7ffa7d3d3a89595191b))
+  - update release notes ([3fff537](https://github.com/BstLabs/py-vm-instance-aws/commit/3fff5374c96bb38b35ac13bc0bdf7da3c7b94ddd))
+
 ## [v1.0.9](https://github.com/BstLabs/py-vm-instance-aws/releases/tag/v1.0.9) - 2022-09-29 14:19:46
 
 ## [v1.0.9b2](https://github.com/BstLabs/py-vm-instance-aws/releases/tag/v1.0.9b2) - 2022-09-20 16:14:03
