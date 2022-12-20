@@ -92,10 +92,10 @@ class Ec2RemoteShellProxy(Ec2InstanceProxy):
 
     def execute(
         self,
-        delay=1,
-        attempts=60,
-        wait=True,
         *command: str,
+        delay: int = 1,
+        attempts: int = 60,
+        wait: bool = True,
         **parameters: str,
     ) -> Union[Tuple[Any, ...], str]:
 
