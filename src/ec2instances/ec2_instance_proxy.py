@@ -1,9 +1,10 @@
+from time import sleep
 from types import FunctionType
 from typing import Any, Callable, Optional, Tuple, Union
 
 import botocore
 from boto3 import resource
-from botocore.exceptions import ClientError
+from botocore.exceptions import ClientError, WaiterError
 from instances_map_abc.vm_instance_proxy import VmState
 
 
@@ -117,11 +118,22 @@ class Ec2RemoteShellProxy(Ec2InstanceProxy):
             return command_id
 
         waiter = self._ssm_client.get_waiter("command_executed")
-        waiter.wait(
-            CommandId=command_id,
-            InstanceId=self._instance_id,
-            WaiterConfig={"Delay": delay, "MaxAttempts": attempts},
-        )
+        wait_ex = None
+        for _ in range(10):
+            try:
+                waiter.wait(
+                    CommandId=command_id,
+                    InstanceId=self._instance_id,
+                    WaiterConfig={"Delay": delay, "MaxAttempts": attempts},
+                )
+                break
+            except WaiterError as ex:
+                wait_ex = ex
+                sleep(1)
+        else:
+            raise RuntimeError(
+                f"Failed waiting for command id: {command_id}"
+            ) from wait_ex
 
         response = self._ssm_client.get_command_invocation(
             CommandId=command_id,
