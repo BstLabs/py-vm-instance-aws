@@ -3,7 +3,6 @@ from types import FunctionType
 from typing import Any, Callable, Optional, Tuple, Union
 
 import botocore
-from boto3 import resource
 from botocore.exceptions import ClientError, WaiterError
 from instances_map_abc.vm_instance_proxy import VmState
 
@@ -29,8 +28,8 @@ class Ec2InstanceProxy:
         try:
             self._instance_id = instance_id
             self._ec2_client = ec2_client or session.client("ec2")
-            self._instance = resource("ec2").Instance(instance_id)
-            self._instance.state  # TODO this line raises the exception (in case of credentials problem)
+            self._instance = session.resource("ec2").Instance(instance_id)
+            self._instance.state  # this line raises an exception (in case of credentials/session issue)
         except ClientError:
             if isinstance(auth_callback, FunctionType):
                 auth_callback(**kwargs)
