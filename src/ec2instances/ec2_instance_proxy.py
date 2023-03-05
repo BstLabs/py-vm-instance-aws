@@ -27,6 +27,7 @@ class Ec2InstanceProxy:
     ) -> None:
         try:
             self._instance_id = instance_id
+            self._default_user = "ssm-user"
             self._ec2_client = ec2_client or session.client("ec2")
             self._instance = session.resource("ec2").Instance(instance_id)
             self._instance.state  # this line raises an exception (in case of credentials/session issue)
@@ -92,7 +93,8 @@ class Ec2RemoteShellProxy(Ec2InstanceProxy):
 
     def execute(
         self,
-        *command: str,
+        *commands: str,
+        shell_user: Optional[str] = None,
         delay: int = 1,
         attempts: int = 60,
         wait: bool = True,
@@ -109,7 +111,14 @@ class Ec2RemoteShellProxy(Ec2InstanceProxy):
         result = self._ssm_client.send_command(
             InstanceIds=[self._instance_id],
             DocumentName="AWS-RunShellScript",
-            Parameters={"commands": ["source /etc/bashrc", *command], **parameters},
+            Parameters={
+                "commands": [
+                    "#!/bin/bash",
+                    f"source /home/{shell_user or self._default_user}/.bashrc",
+                    f"runuser {shell_user or self._default_user} -c '{' && '.join(commands)}'",
+                ],
+                **parameters,
+            },
         )
 
         command_id = result["Command"]["CommandId"]
