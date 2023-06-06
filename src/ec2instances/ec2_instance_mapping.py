@@ -38,13 +38,9 @@ class Ec2AllInstancesData:
 
 
 class Ec2InstanceMapping(VmInstanceMappingBase[VmInstanceProxy]):
-    def __init__(
-        self, session, auth_callback: Optional[Callable] = None, region: str = None
-    ) -> None:
+    def __init__(self, session, auth_callback: Optional[Callable] = None) -> None:
         self._session = session
-        self._client = self._session.client(
-            "ec2", region_name=region or session.region_name
-        )
+        self._client = self._session.client("ec2")
         self._reauth = auth_callback
 
     def __getitem__(self, name: str) -> VmInstanceProxy:
