@@ -115,7 +115,7 @@ class Ec2RemoteShellProxy(Ec2InstanceProxy):
                 "commands": [
                     "#!/bin/bash",
                     f"source /home/{shell_user or self._default_user}/.bashrc",
-                    f"runuser {shell_user or self._default_user} -c '{' && '.join(commands)}'",
+                    f"runuser -u {shell_user or self._default_user} {' && '.join(commands)}",
                 ],
                 **parameters,
             },
