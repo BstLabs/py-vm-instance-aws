@@ -9,6 +9,7 @@ from src.ec2instances.ec2_instance_proxy import Ec2RemoteShellProxy
 
 
 class TestRemoteShell(TestCase):
+
     @classmethod
     def setUpClass(cls):
         warnings.filterwarnings(
@@ -25,10 +26,11 @@ class TestRemoteShell(TestCase):
             instance_id=self._instance_id,
             session=boto3.Session(),
         )
-        out, err = shell.execute(os.environ.get("EC2MAP_TEST_COMMAND", "echo ~"))
+        cmd = os.environ.get("EC2MAP_TEST_COMMAND", "echo ~")
+        out, err = shell.execute(*cmd.split(','), workingDirectory=['/home/ssm-user'])
         print()
-        print("out:", out)
-        print("err:", err)
+        print(out)
+        print(err)
 
 
 if __name__ == "__main__":
