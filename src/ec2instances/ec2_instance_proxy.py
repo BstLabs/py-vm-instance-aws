@@ -98,7 +98,7 @@ class Ec2RemoteShellProxy(Ec2InstanceProxy):
         delay: int = 1,
         attempts: int = 60,
         wait: bool = True,
-        **parameters: str,
+        **parameters,
     ) -> Union[Tuple[Any, ...], str]:
 
         try:
@@ -115,7 +115,10 @@ class Ec2RemoteShellProxy(Ec2InstanceProxy):
                 "commands": [
                     "#!/bin/bash",
                     f"source /home/{shell_user or self._default_user}/.bashrc",
-                    f"runuser -u {shell_user or self._default_user} {' && '.join(commands)}",
+                    *(
+                        f"runuser -u {shell_user or self._default_user} {cmd}"
+                        for cmd in commands
+                    ),
                 ],
                 **parameters,
             },
